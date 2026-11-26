@@ -6,10 +6,15 @@ data class Contact(
     val title: String = "",
     val company: String = "",
     val phone: String,
+    val secondaryPhone: String = "",
     val email: String,
     val address: String = "",
+    val workAddress: String = "",
+    val nickname: String = "",
+    val birthday: String = "",
+    val assistant: String = "",
     val notes: String = "",
-    val group: String = "All", // "Favorites", "Family", "Work"
+    val group: String = "All",
     val isFavorite: Boolean = false,
     val avatarColor: Long = 0xFF006A6A,
     val avatarUri: String? = null

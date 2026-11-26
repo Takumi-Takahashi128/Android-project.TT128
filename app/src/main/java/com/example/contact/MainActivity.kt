@@ -9,6 +9,7 @@ import com.example.contactsapp.model.Contact
 import com.example.contactsapp.model.sampleContacts
 import com.example.contactsapp.model.sampleMyProfile
 import com.example.contactsapp.ui.screens.*
+import com.example.contact.ui.screens.EditContactScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

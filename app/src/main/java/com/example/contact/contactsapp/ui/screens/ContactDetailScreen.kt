@@ -289,6 +289,10 @@ fun ContactDetailScreen(
                             Text("Contact info", fontWeight = FontWeight.Bold, color = tealPrimary)
                             Spacer(modifier = Modifier.height(16.dp))
                             InfoRow(Icons.Default.Phone, "Mobile", contact.phone)
+                            if (contact.secondaryPhone.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                InfoRow(Icons.Default.PhoneAndroid, "Mobile 2", contact.secondaryPhone)
+                            }
                             Spacer(modifier = Modifier.height(16.dp))
                             InfoRow(Icons.Default.Email, "Email", contact.email)
                             if (contact.address.isNotBlank()) {
@@ -298,6 +302,22 @@ fun ContactDetailScreen(
                             if (contact.notes.isNotBlank()) {
                                 Spacer(modifier = Modifier.height(16.dp))
                                 InfoRow(Icons.Default.Notes, "Notes", contact.notes)
+                            }
+                            if (contact.nickname.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                InfoRow(Icons.Default.Badge, "Nickname", contact.nickname)
+                            }
+                            if (contact.birthday.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                InfoRow(Icons.Default.Cake, "Birthday", contact.birthday)
+                            }
+                            if (contact.workAddress.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                InfoRow(Icons.Default.Work, "Work Address", contact.workAddress)
+                            }
+                            if (contact.assistant.isNotBlank()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                InfoRow(Icons.Default.SupportAgent, "Assistant", contact.assistant)
                             }
                         }
                     }
