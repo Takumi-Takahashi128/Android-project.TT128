@@ -59,6 +59,41 @@ fun ContactsApp() {
             },
             onGroupsClick = {
                 currentScreen = "groups"
+            },
+            onGroupChanged = { targetContact, newGroup ->
+                val updated = if (newGroup == "Favorites") {
+                    targetContact.copy(group = newGroup, isFavorite = true)
+                } else {
+                    targetContact.copy(group = newGroup)
+                }
+                saveUpdatedContact(updated)
+            },
+            onDeleteClick = { targetContact ->
+                contacts = contacts.filterNot { it.id == targetContact.id }
+                if (selectedContact?.id == targetContact.id) {
+                    selectedContact = null
+                }
+            },
+            onBatchGroupChanged = { targets, newGroup ->
+                val targetIds = targets.map { it.id }.toSet()
+                contacts = contacts.map { item ->
+                    if (item.id in targetIds) {
+                        if (newGroup == "Favorites") {
+                            item.copy(group = newGroup, isFavorite = true)
+                        } else {
+                            item.copy(group = newGroup)
+                        }
+                    } else {
+                        item
+                    }
+                }
+            },
+            onBatchDeleteClick = { targets ->
+                val targetIds = targets.map { it.id }.toSet()
+                contacts = contacts.filterNot { it.id in targetIds }
+                if (selectedContact?.id in targetIds) {
+                    selectedContact = null
+                }
             }
         )
         "detail" -> selectedContact?.let { contact ->
