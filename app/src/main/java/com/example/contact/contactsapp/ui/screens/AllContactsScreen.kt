@@ -21,12 +21,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.contactsapp.model.Contact
+import androidx.compose.foundation.Image
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import com.example.contact.ui.components.loadImageBitmapFromUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllContactsScreen(
     contacts: List<Contact>,
+    myProfile: Contact,
     onContactClick: (Contact) -> Unit,
+    onMyInfoClick: () -> Unit,
     onAddClick: () -> Unit,
     onGroupsClick: () -> Unit
 ) {
@@ -59,13 +66,30 @@ fun AllContactsScreen(
                 .padding(padding)
                 .background(Color.White)
         ) {
-            // Search Bar + Circular Add Button
+            // My Information Button (Left) + Search Bar + Add Button (Right)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(horizontal = 12.dp, vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                FilledTonalIconButton(
+                    onClick = onMyInfoClick,
+                    modifier = Modifier.size(48.dp),
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = Color(0xFFE0F2F1),
+                        contentColor = Color(0xFF00695C)
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "My Information",
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
@@ -75,7 +99,9 @@ fun AllContactsScreen(
                     singleLine = true,
                     modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+
+                Spacer(modifier = Modifier.width(8.dp))
+
                 FilledIconButton(
                     onClick = onAddClick,
                     modifier = Modifier.size(48.dp),
@@ -93,7 +119,7 @@ fun AllContactsScreen(
                         .padding(end = 24.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    items(filteredContacts) { contact ->
+                    items(filteredContacts, key = { it.id }) { contact ->
                         ContactListItem(contact = contact, onClick = { onContactClick(contact) })
                     }
                 }
@@ -121,6 +147,11 @@ fun AllContactsScreen(
 
 @Composable
 fun ContactListItem(contact: Contact, onClick: () -> Unit) {
+    val context = LocalContext.current
+    val avatarBitmap = remember(contact.avatarUri) {
+        loadImageBitmapFromUri(context, contact.avatarUri)
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -135,11 +166,20 @@ fun ContactListItem(contact: Contact, onClick: () -> Unit) {
                 .background(Color(0xFFE0F2F1)),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = contact.name.take(1),
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF00695C)
-            )
+            if (avatarBitmap != null) {
+                Image(
+                    bitmap = avatarBitmap,
+                    contentDescription = "${contact.name} photo",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Text(
+                    text = contact.name.take(1).uppercase(),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF00695C)
+                )
+            }
         }
         Spacer(modifier = Modifier.width(16.dp))
         Text(

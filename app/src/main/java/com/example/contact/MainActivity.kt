@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import com.example.contactsapp.model.Contact
 import com.example.contactsapp.model.sampleContacts
+import com.example.contactsapp.model.sampleMyProfile
 import com.example.contactsapp.ui.screens.*
 
 class MainActivity : ComponentActivity() {
@@ -23,14 +24,33 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ContactsApp() {
     var contacts by remember { mutableStateOf(sampleContacts) }
+    var myProfile by remember { mutableStateOf(sampleMyProfile) }
     var currentScreen by remember { mutableStateOf("list") }
     var selectedContact by remember { mutableStateOf<Contact?>(null) }
+
+    fun saveUpdatedContact(updated: Contact) {
+        if (updated.id == myProfile.id) {
+            myProfile = updated
+        } else {
+            contacts = if (contacts.any { it.id == updated.id }) {
+                contacts.map { if (it.id == updated.id) updated else it }
+            } else {
+                contacts + updated
+            }
+        }
+        selectedContact = updated
+    }
 
     when (currentScreen) {
         "list" -> AllContactsScreen(
             contacts = contacts,
+            myProfile = myProfile,
             onContactClick = {
                 selectedContact = it
+                currentScreen = "detail"
+            },
+            onMyInfoClick = {
+                selectedContact = myProfile
                 currentScreen = "detail"
             },
             onAddClick = {
@@ -44,8 +64,25 @@ fun ContactsApp() {
         "detail" -> selectedContact?.let { contact ->
             ContactDetailScreen(
                 contact = contact,
+                isMyProfile = contact.id == myProfile.id,
                 onBackClick = { currentScreen = "list" },
-                onEditClick = { currentScreen = "edit" }
+                onEditClick = { currentScreen = "edit" },
+                onImageSelected = { targetContact, uriString ->
+                    saveUpdatedContact(targetContact.copy(avatarUri = uriString))
+                },
+                onGroupChanged = { targetContact, newGroup ->
+                    val updated = if (newGroup == "Favorites") {
+                        targetContact.copy(group = newGroup, isFavorite = true)
+                    } else {
+                        targetContact.copy(group = newGroup)
+                    }
+                    saveUpdatedContact(updated)
+                },
+                onDeleteClick = { targetContact ->
+                    contacts = contacts.filterNot { it.id == targetContact.id }
+                    selectedContact = null
+                    currentScreen = "list"
+                }
             )
         }
         "edit" -> EditContactScreen(
@@ -54,12 +91,12 @@ fun ContactsApp() {
                 currentScreen = if (selectedContact != null) "detail" else "list"
             },
             onSave = { savedContact ->
-                contacts = if (contacts.any { it.id == savedContact.id }) {
-                    contacts.map { if (it.id == savedContact.id) savedContact else it }
+                val merged = if (selectedContact?.avatarUri != null && savedContact.avatarUri == null) {
+                    savedContact.copy(avatarUri = selectedContact?.avatarUri)
                 } else {
-                    contacts + savedContact
+                    savedContact
                 }
-                selectedContact = savedContact
+                saveUpdatedContact(merged)
                 currentScreen = "detail"
             }
         )

@@ -11,7 +11,8 @@ data class Contact(
     val notes: String = "",
     val group: String = "All", // "Favorites", "Family", "Work"
     val isFavorite: Boolean = false,
-    val avatarColor: Long = 0xFF006A6A
+    val avatarColor: Long = 0xFF006A6A,
+    val avatarUri: String? = null
 )
 
 val sampleContacts = listOf(
@@ -55,4 +56,17 @@ val sampleContacts = listOf(
         group = "Family",
         isFavorite = false
     )
+)
+
+val sampleMyProfile = Contact(
+    id = "my_info",
+    name = "My Information",
+    title = "Android Developer",
+    company = "Personal Profile",
+    phone = "+1 555-0100",
+    email = "me@example.com",
+    address = "123 Main St",
+    notes = "My personal contact card.",
+    group = "All",
+    isFavorite = false
 )
